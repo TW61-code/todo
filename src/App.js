@@ -1,10 +1,7 @@
 import './App.css';
 import {useState, useEffect} from "react";
-
-const completedStyles = {
-  color: "hsl(0, 0%, 60%)",
-  textDecoration: "line-through",
-}
+import Form from './components/Form.jsx';
+import List from './components/List.jsx';
 
 function App() {
 
@@ -37,79 +34,24 @@ function App() {
     }
   }
 
-  function handleDeleteTodo(e, id) {
-    e.preventDefault();
-    setTodos((currentTodos) => {
-      return currentTodos.filter((todo) => todo.id !== id);
-    });
-  };
-
-  function handleCompleteTodo(e, id) {
-    e.preventDefault();
-    
-    const completedTodos = todos.map((todo) => {
-      return todo.id === id ? {...todo, completed: !todo.completed} : todo;
-    });
-    setTodos(completedTodos);
-  }
-
-  function handleEditTodo(e, id) {
-    e.preventDefault();
-    const updateTodos = todos.map((todo) => {
-        return todo.id === id ? {...todo, isEdit: !todo.isEdit} : todo;
-    });
-    console.log(updateTodos);
-    setTodos(updateTodos);
-  }
-
-  function handleSubmitEdit(e, id) {
-    e.preventDefault();
-    const updateTodos = todos.map((todo) => {
-      if (todo.id === id && editInput !== '') {
-        return {...todo, text: editInput, isEdit: false};
-      } else {
-        return {...todo, text: todo.text, isEdit: false};
-      }
-    });
-    setTodos(updateTodos);
-    setEditValue('');
-  }
-
-  function handleCancelEdit(e, id) {
-    e.preventDefault();
-    const updateTodos = todos.map((todo) => {
-      return todo.id === id ? {...todo, isEdit: false} : todo;
-    });
-    setTodos(updateTodos);
-    setEditValue('');
-  }
-
   return (
     <div className="todo-app">
       <h1>TODO</h1>
-      <form onSubmit={addTodo}>
-        <input type="text" value={input} onChange={(e) => setValue(e.target.value)} />
-        <button>Submit</button>
-      </form>
+      <Form onHandleSubmit={addTodo} value={input} setState={setValue} />
       <ul>
           {todos.map((todo, index) => {
             return (
               <li key={index}>
-                {todo.isEdit ? 
-                  <div className='isEdit'>
-                    <input type='text' value={editInput} onChange={(e) => setEditValue(e.target.value)}/> 
-                    <span onClick={(e) => handleSubmitEdit(e, todo.id)}>✔️</span>
-                    <span onClick={(e) => handleCancelEdit(e, todo.id)}>❌</span>   
-                  </div>
-                  : 
-                  <div className='isNotEdit'>
-                    <p style={todo.completed ? completedStyles : {}}>{todo.text}</p>
-                    <div className="todo-span-container">
-                      <span onClick={(e) => handleEditTodo(e, todo.id)}>✏️</span>
-                      <span onClick={(e) => handleCompleteTodo(e, todo.id)}>✔️</span>
-                      <span onClick={(e) => handleDeleteTodo(e, todo.id)}>❌</span>   
-                    </div>
-                  </div>}
+                <List 
+                  setTodos={setTodos}
+                  todos={todos}
+                  id={todo.id}
+                  editInput={editInput}
+                  setEditValue={setEditValue}
+                  completed={todo.completed}
+                  text={todo.text}
+                  isEdit={todo.isEdit}
+                />
               </li>
             )
           })}
